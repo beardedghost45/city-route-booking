@@ -13,6 +13,7 @@ Create a web application with a Java backend and a React frontend that lets a cu
 5. Use an idempotency key on booking creation so retries of the same create request do not create duplicate bookings.
 6. Use HTTP `ETag`/`If-Match` to protect concurrent updates to the same booking; reject an update based on a stale tag.
 7. Develop through GitHub issues created and sequenced by an orchestrator agent, then worked by specialized agents.
+8. Provide a read-only admin dashboard for reviewing bookings, protected by one environment-configured admin identity.
 
 ## Confirmed booking requirements
 
@@ -24,7 +25,8 @@ Create a web application with a Java backend and a React frontend that lets a cu
 - **Concurrent updates:** Updates to one booking must use `ETag`/`If-Match`; a stale conditional update is rejected.
 - **Payment:** Simulated status flow only. No payment gateway, actual charge, or real money movement. Exact fare calculation is deferred unless a non-financial test amount is needed to exercise the simulated status flow.
 - **Cancellation:** A cancellation sets the booking to cancelled. After successful simulated payment, it also records refund-pending; no real refund is issued.
-- **Deferred from MVP:** Seat/class selection, capacity management, authentication, and staff tools.
+- **Admin access:** A read-only bookings dashboard is available to one admin identity configured through `ADMIN_USERNAME` and `ADMIN_PASSWORD`. No credentials are built in; missing or blank configuration denies admin access.
+- **Deferred from MVP:** Seat/class selection, capacity management, and customer authentication. Admin access does not protect customer booking flows.
 
 ## Agent roles
 
@@ -43,4 +45,4 @@ Create a web application with a Java backend and a React frontend that lets a cu
 - Every state-changing request for an existing booking requires `If-Match`; a missing header returns HTTP 428 and a stale tag returns HTTP 412.
 - GitHub Actions runs backend and frontend checks.
 
-The work is split into ordered GitHub issues: [database foundation](https://github.com/beardedghost45/city-route-booking/issues/2), [booking API](https://github.com/beardedghost45/city-route-booking/issues/3), [React UI](https://github.com/beardedghost45/city-route-booking/issues/4), and [integration checks and run docs](https://github.com/beardedghost45/city-route-booking/issues/5).
+The work is split into ordered GitHub issues: [database foundation](https://github.com/beardedghost45/city-route-booking/issues/2), [booking API](https://github.com/beardedghost45/city-route-booking/issues/3), [React UI](https://github.com/beardedghost45/city-route-booking/issues/4), [integration checks and run docs](https://github.com/beardedghost45/city-route-booking/issues/5), and the [protected admin bookings dashboard](https://github.com/beardedghost45/city-route-booking/issues/7).
