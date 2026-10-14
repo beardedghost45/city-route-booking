@@ -15,12 +15,13 @@ We are starting a city-to-city booking application with a Java backend and a Rea
 - Cancellation marks the booking cancelled. After successful simulated payment, also record refund-pending; no real refund is issued.
 - Seat/class selection, seat capacity, transport inventory, authentication, and staff tools are deferred from the MVP.
 
-## Technical follow-up
+## Implementation decisions and issue sequence
 
-- Choose or delegate the Java framework, database, and React toolchain in implementation issues.
-- Define the idempotency-key scope/retention and the API response for a conflicting key payload.
-- Define the precise stale-`If-Match` API response and persistence implementation.
-- Split database, API, React UI, and focused test work into dependent issues based on the confirmed behavior above.
+- Use Spring Boot with Java 17, PostgreSQL, and Flyway; use React, TypeScript, and Vite.
+- Idempotency keys are global for this unauthenticated MVP and retained with the booking. Same key plus the same normalized request returns the original booking; same key plus a different request returns HTTP 409.
+- New bookings start pending payment. A demo action records simulated success or failure.
+- Every state-changing request for an existing booking requires `If-Match`; a missing header returns HTTP 428 and a stale tag returns HTTP 412.
+- The orchestrator created ordered issues for the [database foundation](https://github.com/beardedghost45/city-route-booking/issues/2), [booking API](https://github.com/beardedghost45/city-route-booking/issues/3), [React UI](https://github.com/beardedghost45/city-route-booking/issues/4), and [integration checks, CI, and run docs](https://github.com/beardedghost45/city-route-booking/issues/5).
 
 ## Acceptance criteria
 
@@ -30,6 +31,6 @@ We are starting a city-to-city booking application with a Java backend and a Rea
 - [x] ETag/If-Match behavior for concurrent updates and idempotency-key behavior for duplicate create retries are documented.
 - [x] Booking-number format and uniqueness are documented.
 - [x] The brief supports testable acceptance criteria for booking creation, payment status, cancellation, and user-visible confirmation.
-- [ ] The orchestrator can split the approved requirements into ordered database, API, React UI, and testing issues without relying on unresolved product decisions.
+- [x] The orchestrator split the approved requirements into ordered database, API, React UI, and testing issues.
 
 Product behavior is resolved. Implementation and technical choices are intentionally outside this requirements issue.
