@@ -36,4 +36,11 @@ Create a web application with a Java backend and a React frontend that lets a cu
 
 ## Implementation choices
 
-Select or delegate the Java framework, database, and React toolchain through technical issues. These choices do not change the confirmed product behavior above.
+- Backend: Java 17 with Spring Boot, PostgreSQL, and Flyway migrations.
+- Frontend: React with TypeScript and Vite.
+- Idempotency keys are global in this unauthenticated MVP and stay with a booking. A retry with the same normalized request returns the original booking; reuse with a different request returns HTTP 409.
+- New bookings start pending payment. A demo action records simulated success or failure.
+- Every state-changing request for an existing booking requires `If-Match`; a missing header returns HTTP 428 and a stale tag returns HTTP 412.
+- GitHub Actions runs backend and frontend checks.
+
+The work is split into ordered GitHub issues: [database foundation](https://github.com/beardedghost45/city-route-booking/issues/2), [booking API](https://github.com/beardedghost45/city-route-booking/issues/3), [React UI](https://github.com/beardedghost45/city-route-booking/issues/4), and [integration checks and run docs](https://github.com/beardedghost45/city-route-booking/issues/5).
