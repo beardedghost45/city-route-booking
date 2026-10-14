@@ -24,7 +24,7 @@ public class FrontendCorsConfiguration implements WebMvcConfigurer {
         registry.addMapping("/api/**")
                 .allowedOrigins(allowedOrigins.toArray(String[]::new))
                 .allowedMethods("GET", "POST", "OPTIONS")
-                .allowedHeaders("Content-Type", "Idempotency-Key", "If-Match")
+                .allowedHeaders("Content-Type", "Idempotency-Key", "If-Match", "Authorization")
                 .exposedHeaders("ETag", "Location")
                 .allowCredentials(false)
                 .maxAge(3600);

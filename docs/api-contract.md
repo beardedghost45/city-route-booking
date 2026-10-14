@@ -10,7 +10,54 @@ Configure the exact frontend origins with the comma-separated `FRONTEND_ORIGINS`
 FRONTEND_ORIGINS=http://localhost:5173,https://booking.example.com
 ```
 
-Entries must be explicit HTTP(S) origins without paths; wildcard origins and wildcard subdomains are rejected. Set this variable to the deployment's specific frontend origins in production. The API allows `GET`, `POST`, and `OPTIONS`, and request headers `Content-Type`, `Idempotency-Key`, and `If-Match`. Browser responses expose `ETag` and `Location`. Credentials are not enabled.
+Entries must be explicit HTTP(S) origins without paths; wildcard origins and wildcard subdomains are rejected. Set this variable to the deployment's specific frontend origins in production. The API allows `GET`, `POST`, and `OPTIONS`, and request headers `Content-Type`, `Idempotency-Key`, `If-Match`, and `Authorization`. Browser responses expose `ETag` and `Location`. Cookies and cross-origin credentials are not enabled; the admin client sends HTTP Basic credentials in the `Authorization` header.
+
+## Read-only admin bookings
+
+`GET /api/admin/bookings` requires HTTP Basic authentication with the username and password configured in `ADMIN_USERNAME` and `ADMIN_PASSWORD`. Both environment variables must be set to non-blank values. The application has no built-in credentials; when either variable is missing or blank, the admin endpoint rejects all requests, including requests that supply a guessed username and password. Customer booking endpoints remain available without these admin credentials.
+
+```sh
+ADMIN_USERNAME=booking-admin \
+ADMIN_PASSWORD='replace-with-a-secret' \
+FRONTEND_ORIGINS=http://localhost:5173 \
+./mvnw spring-boot:run
+```
+
+Use a secret value from the deployment's secret manager for `ADMIN_PASSWORD`; do not commit credentials. HTTP Basic credentials must be sent over HTTPS outside local development.
+
+Pagination is zero-based. Defaults are `page=0` and `size=20`; `size` must be from 1 through 100. Results are ordered by `createdAt` descending, then `bookingNumber` descending to give equal timestamps a deterministic order. Invalid page or size values return `400 Bad Request`.
+
+```http
+GET /api/admin/bookings?page=0&size=20
+Authorization: Basic <base64-username-and-password>
+```
+
+The response includes `items`, `page`, `size`, `totalElements`, and `totalPages`. Each item contains only the same public booking fields shown in the customer GET response; database IDs and idempotency/persistence metadata are omitted.
+
+```json
+{
+  "items": [
+    {
+      "bookingNumber": "BK-1f75d5278fb24a6d99c287a1a2e18ce2",
+      "origin": "DELHI",
+      "destination": "MUMBAI",
+      "travelDate": "2027-03-14",
+      "passengerCount": 2,
+      "leadPassengerName": "Ada Lovelace",
+      "leadPassengerContact": "ada@example.test",
+      "bookingStatus": "PENDING_PAYMENT",
+      "paymentStatus": "PENDING",
+      "refundStatus": "NONE",
+      "createdAt": "2026-10-14T10:00:00Z",
+      "updatedAt": "2026-10-14T10:00:00Z"
+    }
+  ],
+  "page": 0,
+  "size": 20,
+  "totalElements": 1,
+  "totalPages": 1
+}
+```
 
 ## Create a booking
 

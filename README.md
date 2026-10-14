@@ -9,6 +9,7 @@ A Java booking service with a React web client for booking travel between suppor
 - Support Delhi, Mumbai, Hyderabad, Kolkata, and Bengaluru. Any two distinct cities form a valid route.
 - Include simulated payment and cancellation; a paid cancellation records refund-pending without moving real money.
 - Protect duplicate create retries with an idempotency key and concurrent booking changes with HTTP ETag/If-Match.
+- Provide a read-only admin bookings page at `/admin`, protected by a configured admin username and password.
 - Build and deliver the product through an issue-driven workflow using the five role prompts in [`agents/`](agents/).
 
 ## Agent workflow
@@ -20,7 +21,7 @@ A Java booking service with a React web client for booking travel between suppor
 5. The testing agent adds and runs focused checks for the behavior covered by an issue.
 6. The orchestrator checks dependencies, reviews the changes, and closes the loop in the issue.
 
-See [`docs/product-brief.md`](docs/product-brief.md) for the approved scope. Implementation is tracked in [issues #2–#5](https://github.com/beardedghost45/city-route-booking/issues).
+See [`docs/product-brief.md`](docs/product-brief.md) for the approved scope. Implementation is tracked in [GitHub issues](https://github.com/beardedghost45/city-route-booking/issues), including the [admin dashboard issue #7](https://github.com/beardedghost45/city-route-booking/issues/7).
 
 ## Planned structure
 
@@ -50,10 +51,12 @@ Prerequisites: Java 17, Node.js 24 with npm, and Docker Compose v2.
 
    ```sh
    cd backend
+   ADMIN_USERNAME=booking-admin \
+   ADMIN_PASSWORD='replace-with-a-local-secret' \
    ./mvnw spring-boot:run
    ```
 
-   The API listens on `http://localhost:8080`. Its default database connection matches the Compose service. Override `DB_URL`, `DB_USERNAME`, or `DB_PASSWORD` to use another PostgreSQL instance. The default browser origin is `http://localhost:5173`; set `FRONTEND_ORIGINS` to a comma-separated list of exact frontend origins when changing it.
+   The API listens on `http://localhost:8080`. Its default database connection matches the Compose service. Override `DB_URL`, `DB_USERNAME`, or `DB_PASSWORD` to use another PostgreSQL instance. The default browser origin is `http://localhost:5173`; set `FRONTEND_ORIGINS` to a comma-separated list of exact frontend origins when changing it. The admin endpoint has no built-in credentials, so set both variables to non-blank values to enable admin sign-in. Keep the password out of source control.
 
 3. In another terminal, install the locked frontend dependencies and start Vite:
 
@@ -63,7 +66,7 @@ Prerequisites: Java 17, Node.js 24 with npm, and Docker Compose v2.
    npm run dev
    ```
 
-   Open `http://localhost:5173`. Vite proxies `/api` requests to the local API. To use a separately hosted API, copy `frontend/.env.example` to `frontend/.env` and set `VITE_API_BASE_URL`.
+   Open `http://localhost:5173` for booking or `http://localhost:5173/admin` to review bookings. Vite proxies `/api` requests to the local API. To use a separately hosted API, copy `frontend/.env.example` to `frontend/.env` and set `VITE_API_BASE_URL`.
 
 ## Run checks
 
@@ -87,4 +90,4 @@ To stop the local database, run `docker compose down` from the repository root.
 
 Bookings use any two distinct cities among Delhi, Mumbai, Hyderabad, Kolkata, and Bengaluru. A booking requires a travel date, positive passenger count, lead passenger name, and contact. Create requests require an `Idempotency-Key`; repeating the same key and payload returns the original booking. Payment and cancellation updates require the current `ETag` in `If-Match`; stale updates return `412`, and missing tags return `428`.
 
-Payment and refund states are simulations only: the application does not connect to a payment provider, charge or refund money, or calculate fares. The MVP has no seat-capacity management or authentication. See [`docs/api-contract.md`](docs/api-contract.md) for request, response, and error details.
+Payment and refund states are simulations only: the application does not connect to a payment provider, charge or refund money, or calculate fares. The MVP has no seat-capacity management or customer authentication. The read-only admin bookings API uses HTTP Basic credentials from `ADMIN_USERNAME` and `ADMIN_PASSWORD`; configure both before enabling admin access. See [`docs/api-contract.md`](docs/api-contract.md) for request, response, and error details.
