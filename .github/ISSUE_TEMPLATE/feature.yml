@@ -1,0 +1,48 @@
+name: Feature or project task
+description: Track one issue-sized piece of the booking MVP
+title: ""
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Why is this work needed?
+    validations:
+      required: true
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Requirements
+      description: List confirmed requirements. Mark assumptions explicitly.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Describe observable outcomes that can be checked.
+      placeholder: |
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and open questions
+      description: Link prerequisite issues and list unresolved decisions.
+    validations:
+      required: false
+  - type: dropdown
+    id: role
+    attributes:
+      label: Suggested agent role
+      options:
+        - Orchestrator
+        - Requirements gathering
+        - Database
+        - Coding
+        - Testing
+    validations:
+      required: true
