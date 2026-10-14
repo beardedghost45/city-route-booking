@@ -10,6 +10,6 @@ The role prompts in `agents/` describe the responsibilities for this project:
 - `coding.md` implements the Java API and React client.
 - `testing.md` validates behavior and adds focused tests.
 
-The issue workflow starts with requirements. Do not guess the fifth city: the brief currently names only Delhi, Mumbai, Hyderabad, and Kolkata. Record the decision in the requirements issue before implementing route validation.
+Approved product behavior and the selected stack are recorded in `docs/product-brief.md` and the linked implementation issues. The requirements issue is complete; do not reopen settled product decisions unless the user changes them.
 
 Do not claim a role prompt has run unless an agent was actually invoked. Do not close an issue until its acceptance criteria have been checked and the relevant changes are summarized.
