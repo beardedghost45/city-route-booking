@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/city_route_booking}
+    username: ${DB_USERNAME:booking}
+    password: ${DB_PASSWORD:booking}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+app:
+  cors:
+    allowed-origins: ${FRONTEND_ORIGINS:http://localhost:5173}
